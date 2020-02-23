@@ -205,6 +205,9 @@ function showItems(str) {
 			$('.cart-total span').html(prev_charges);
 			
 			$('#total-hidden-charges').val(prev_charges);
+
+      Arrays.push(thisID);
+      console.log(Arrays);
 		}
 		else
 		{
