@@ -165,7 +165,7 @@ function showItems(str) {
     };
     xhttp.open("GET", "./getItems.php?q="+str, true);
     xhttp.send();
-    bindButtonClick();  
+    //bindButtonClick();  
     clearconsole();
   
   }
@@ -173,22 +173,21 @@ function showItems(str) {
 
 
 	var Arrays=new Array();
+  var cartArray=new Array();
 
-	function bindButtonClick(){
+	//function bindButtonClick(){
 
     $('div #modelContents').off().on('click','.box',function(){
 		
 		var thisID = $(this).attr('id');
 		var itemname  = $(this).find('div .name').html();
 		var itemprice =$(this).find('div .price').html();
-    
-    console.log($(this).attr('id'));
-    console.log($(this).find('div .name').html());
-    console.log($(this).find('div .price').html());
-    console.log(Arrays);
 
-		if(include(Arrays,thisID))
+		if( cartArray.find(x => x.id === thisID) )
 		{
+      var newQuantity = (cartArray.find(v => v.id == thisID).quantity)+1;
+      cartArray.find(v => v.id == thisID).quantity = newQuantity;
+
 			var price 	 = $('#each-'+thisID).children(".shopp-price").find('em').html();
 			var quantity = $('#each-'+thisID).children(".shopp-quantity").html();
 			quantity = parseInt(quantity)+parseInt(1);
@@ -206,13 +205,17 @@ function showItems(str) {
 			
 			$('#total-hidden-charges').val(prev_charges);
 
-      Arrays.push(thisID);
+      //Arrays.push(thisID);
+      console.log("Item presents");
       console.log(Arrays);
+      console.log(cartArray);
 		}
 		else
 		{
 			Arrays.push(thisID);
-			
+			cartArray.push({id: thisID, quantity: 1});
+
+      
 			var prev_charges = $('.cart-total span').html();
 			prev_charges = parseInt(prev_charges)+parseInt(itemprice);
 			
@@ -222,12 +225,17 @@ function showItems(str) {
 			$('#left_bar .cart-info').append('<div class="shopp" id="each-'+thisID+'"><div class="label">'+itemname+'</div><div class="shopp-price"> $<em>'+itemprice+'</em></div><span class="shopp-quantity">1</span><img src="remove.png" class="remove" /><br class="all" /></div>');
 			
 			$('#cart').css({'-webkit-transform' : 'rotate(20deg)','-moz-transform' : 'rotate(20deg)' });
+
+      console.log("Item doesn't present");
       console.log(Arrays);
+      console.log(cartArray);
 		}
 		
 	});	
-	
+//}
 	$('.remove').livequery('click', function() {
+    
+    
 		
 		var deduct = $(this).parent().children(".shopp-price").find('em').html();
 		var prev_charges = $('.cart-total span').html();
@@ -236,12 +244,18 @@ function showItems(str) {
 		
 		var pos = getpos(Arrays,thisID);
 		Arrays.splice(pos,1,"0");
+    //cartArray.splice(cartArray.findIndex(item => item.id === thisID), 1);
 		
 		prev_charges = parseInt(prev_charges)-parseInt(deduct);
 		$('.cart-total span').html(prev_charges);
 		$('#total-hidden-charges').val(prev_charges);
 		$(this).parent().remove();
 		
+    console.log("Item removes");
+      console.log(Arrays);
+      console.log(cartArray);
+
+
 	});	
 	
 	$('#Submit').livequery('click', function() {
@@ -253,13 +267,9 @@ function showItems(str) {
 		return false;
 		
 	});	
-  }
+  
 
-function include(arr, obj) {
-  for(var i=0; i<arr.length; i++) {
-    if (arr[i] == obj) return true;
-  }
-}
+
 function getpos(arr, obj) {
   for(var i=0; i<arr.length; i++) {
     if (arr[i] == obj) return i;
