@@ -29,10 +29,10 @@ $result = $conn->query($sql);
   <title>Bootstrap Example</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/livequery/1.1.1/jquery.livequery.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
   <link href="css.css" rel="stylesheet" />
 </head>
 
@@ -67,38 +67,40 @@ $result = $conn->query($sql);
 </style>
 <body>
 
-<nav class="navbar navbar-inverse">
-  <div class="container-fluid">
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
     <div class="navbar-header">
       <a class="navbar-brand" href="#">StorePOS</a>
     </div>
     <ul class="nav navbar-nav">
-      <li class="active"><a href="#">Sales</a></li>
-      <li><a href="#">Day End/Open</a></li>
-      <li><a href="#">Purchase</a></li>
-      <li><a href="#">Add Items</a></li>
-      <li><a href="#">Add Category</a></li>
-      <li><a href="#">Statistics</a></li>
-      <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Statistics <span class="caret"></span></a>
-        <ul class="dropdown-menu">
-          <li><a href="#">Current Sales</a></li>
-          <li><a href="#">Daily Sales</a></li>
-          <li><a href="#">Monthly Sales</a></li>
-          <li><a href="#">Sales By Item Wise</a></li>
-          <li><a href="#">Sales By category Wise</a></li>
-        </ul>
+      <li class="nav-item"><a class="nav-link" href="#">Sales</a></li>
+      <li class="nav-item"><a class="nav-link" class="nav-link" href="#">Day End/Open</a></li>
+      <li class="nav-item"><a class="nav-link" class="nav-link" href="#">Purchase</a></li>
+      <li class="nav-item"><a class="nav-link" class="nav-link" href="#">Add Items</a></li>
+      <li class="nav-item"><a class="nav-link" class="nav-link" href="#">Add Category</a></li>
+      <li class="nav-item"><a class="nav-link" class="nav-link" href="#">Statistics</a></li>
+
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+          Statistics
+        </a>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="#">Current Sales</a>
+          <a class="dropdown-item" href="#">Daily Sales</a>
+          <a class="dropdown-item" href="#">Monthly Sales</a>
+          <a class="dropdown-item" href="#">Sales By Item Wise</a>
+          <a class="dropdown-item" href="#">Sales By category Wise</a>
+        </div>
       </li>
     </ul>
-    <ul class="nav navbar-nav navbar-right">
-      <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-      <li><a href="logout.php"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
+    <ul class="navbar-nav ml-auto">
+    <li class="nav-item"><a class="nav-link" class="nav-link"  href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+    <li class="nav-item"><a class="nav-link" class="nav-link" href="logout.php"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
     </ul>
-  </div>
 </nav>
   
 <div class="container-fluid">
     <div class="row">
-      <div class="col-sm-9">
+      <div class="col-sm-8">
         
         <div class="form-group">
           <label for="email">Item Search</label>
@@ -117,11 +119,11 @@ $result = $conn->query($sql);
               <div class="modal-dialog">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Modal Header</h4>
-                  </div>
-                  <div class="modal-body" id="modelContents">
-                  <div  id="wrapper2"></div>
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      <h4 class="modal-title">Modal Header</h4>
+                    </div>
+                    <div class="modal-body" id="modelContents">
+                    <div  id="wrapper2"></div>
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal" onclick="deleteAll();" >Close</button>
@@ -132,10 +134,100 @@ $result = $conn->query($sql);
         </div>
       </div>
 
-      <div class="col-sm-3" style="background-color:pink;">
+      <div class="col-sm-4" style="background-color:pink;">
         <div id="left_bar"> 
           <form action="#" id="cart_form" name="cart_form">
-            <div class="cart-info"></div>
+          <table class="table table-hover">
+            <thead class="thead-dark">
+              <tr>
+                <th>ID</th>
+                <th>Item</th>
+                <th>Unit Price</th>
+                <th>Quantity</th>
+                <th>Sub Total</th>
+                <th>Delete</th>
+              </tr>
+              </thead>
+                <tbody>
+                  <tr>
+                    <td>123</td>
+                    <td>john@example.com</td>
+                    <td>1234</td>
+                    <td>John</td>
+                    <td>Doe</td>
+                    <td>m</td>
+                  </tr>
+              </tbody>
+              <tbody>
+                  <tr>
+                    <td>123</td>
+                    <td>john@example.com</td>
+                    <td>1234</td>
+                    <td>John</td>
+                    <td>Doe</td>
+                    <td>m</td>
+                  </tr>
+              </tbody>
+              <tbody>
+                  <tr>
+                    <td>123</td>
+                    <td>john@example.com</td>
+                    <td>1234</td>
+                    <td>John</td>
+                    <td>Doe</td>
+                    <td>m</td>
+                  </tr>
+              </tbody>
+              <tbody>
+                  <tr>
+                    <td>123</td>
+                    <td>john@example.com</td>
+                    <td>1234</td>
+                    <td>John</td>
+                    <td>Doe</td>
+                    <td>m</td>
+                  </tr>
+              </tbody>
+              <tbody>
+                  <tr>
+                    <td>123</td>
+                    <td>john@example.com</td>
+                    <td>1234</td>
+                    <td>John</td>
+                    <td>Doe</td>
+                    <td>m</td>
+                  </tr>
+              </tbody>
+              <tbody>
+                  <tr>
+                    <td>123</td>
+                    <td>john@example.com</td>
+                    <td>1234</td>
+                    <td>John</td>
+                    <td>Doe</td>
+                    <td>m</td>
+                  </tr>
+              </tbody>
+              <tbody>
+                  <tr>
+                    <td>123</td>
+                    <td>john@example.com</td>
+                    <td>1234</td>
+                    <td>John</td>
+                    <td>Doe</td>
+                    <td>m</td>
+                  </tr>
+              </tbody>
+              <thead class="thead-dark">
+                <tr>
+                  <th>Total</th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th>5000</th>
+                </tr>
+              </thead>
+            </table>
             <div class="cart-total">
               <b>Total Charges:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b> $<span>0</span>
               <input type="hidden" name="total-hidden-charges" id="total-hidden-charges" value="0" />
@@ -145,6 +237,7 @@ $result = $conn->query($sql);
         </div>
       </div>
     </div>
+  </div>
 </div>
 
 <script>
@@ -165,7 +258,7 @@ function showItems(str) {
     };
     xhttp.open("GET", "./getItems.php?q="+str, true);
     xhttp.send();
-    //bindButtonClick();  
+    bindButtonClick();  
     clearconsole();
   
   }
@@ -174,8 +267,9 @@ function showItems(str) {
 
 	var Arrays=new Array();
   var cartArray=new Array();
+  
 
-	//function bindButtonClick(){
+	function bindButtonClick(){
 
     $('div #modelContents').off().on('click','.box',function(){
 		
@@ -209,6 +303,7 @@ function showItems(str) {
       console.log("Item presents");
       console.log(Arrays);
       console.log(cartArray);
+      bindButtonClick(); 
 		}
 		else
 		{
@@ -222,41 +317,38 @@ function showItems(str) {
 			$('.cart-total span').html(prev_charges);
 			$('#total-hidden-charges').val(prev_charges);
 			
-			$('#left_bar .cart-info').append('<div class="shopp" id="each-'+thisID+'"><div class="label">'+itemname+'</div><div class="shopp-price"> $<em>'+itemprice+'</em></div><span class="shopp-quantity">1</span><img src="remove.png" class="remove" /><br class="all" /></div>');
+      $('#left_bar .cart-info').append('<div class="shopp" id="each-'+thisID+'"><div class="label">'+itemname+'</div><div class="shopp-price"> $<em>'+itemprice+'</em></div><span class="shopp-quantity"><div class="def-number-input number-input safari_only"><button onclick="this.parentNode.querySelector("input[type=number]").stepDown()" class="minus"></button><input class="quantity" min="0" name="quantity" value="1" type="number"><button onclick="this.parentNode.querySelector("input[type=number]").stepUp()" class="plus"></button></div></span><img src="remove.png" class="remove" /><br class="all" /></div>');
 			
 			$('#cart').css({'-webkit-transform' : 'rotate(20deg)','-moz-transform' : 'rotate(20deg)' });
 
       console.log("Item doesn't present");
       console.log(Arrays);
       console.log(cartArray);
+      bindButtonClick(); 
 		}
 		
 	});	
-//}
-	$('.remove').livequery('click', function() {
-    
-    
-		
+  $('body').off().on('click','.remove',function(){
+    console.log("Item removes");
 		var deduct = $(this).parent().children(".shopp-price").find('em').html();
 		var prev_charges = $('.cart-total span').html();
 		
 		var thisID = $(this).parent().attr('id').replace('each-','');
 		
 		var pos = getpos(Arrays,thisID);
-		Arrays.splice(pos,1,"0");
-    //cartArray.splice(cartArray.findIndex(item => item.id === thisID), 1);
+    Arrays.splice(pos,1,"0");
+    
+    cartArray.splice(cartArray.findIndex(item => item.id === thisID), 1);
 		
 		prev_charges = parseInt(prev_charges)-parseInt(deduct);
 		$('.cart-total span').html(prev_charges);
 		$('#total-hidden-charges').val(prev_charges);
 		$(this).parent().remove();
 		
-    console.log("Item removes");
       console.log(Arrays);
       console.log(cartArray);
-
-
-	});	
+  });	
+}
 	
 	$('#Submit').livequery('click', function() {
 		
