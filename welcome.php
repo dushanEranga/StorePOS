@@ -48,7 +48,7 @@ $result = $conn->query($sql);
     background-color: inherit;
     color: #444;
     grid-template-columns: auto auto auto auto ;
-    padding: 25px 50px 75px 75px;
+    padding: 25px 20px 20px 20px;
   }
   .box {
     background-color: #444;
@@ -134,100 +134,67 @@ $result = $conn->query($sql);
         </div>
       </div>
 
-      <div class="col-sm-4" style="background-color:pink;">
+      <div class="col-sm-4" >
         <div id="left_bar"> 
           <form action="#" id="cart_form" name="cart_form">
-          <table class="table table-hover">
+          <div class = "outer">
+            <table class="table  table-hover ">
             <thead class="thead-dark">
-              <tr>
-                <th>ID</th>
-                <th>Item</th>
-                <th>Unit Price</th>
-                <th>Quantity</th>
-                <th>Sub Total</th>
-                <th>Delete</th>
-              </tr>
-              </thead>
-                <tbody>
-                  <tr>
-                    <td>123</td>
-                    <td>john@example.com</td>
-                    <td>1234</td>
-                    <td>John</td>
-                    <td>Doe</td>
-                    <td>m</td>
-                  </tr>
-              </tbody>
-              <tbody>
-                  <tr>
-                    <td>123</td>
-                    <td>john@example.com</td>
-                    <td>1234</td>
-                    <td>John</td>
-                    <td>Doe</td>
-                    <td>m</td>
-                  </tr>
-              </tbody>
-              <tbody>
-                  <tr>
-                    <td>123</td>
-                    <td>john@example.com</td>
-                    <td>1234</td>
-                    <td>John</td>
-                    <td>Doe</td>
-                    <td>m</td>
-                  </tr>
-              </tbody>
-              <tbody>
-                  <tr>
-                    <td>123</td>
-                    <td>john@example.com</td>
-                    <td>1234</td>
-                    <td>John</td>
-                    <td>Doe</td>
-                    <td>m</td>
-                  </tr>
-              </tbody>
-              <tbody>
-                  <tr>
-                    <td>123</td>
-                    <td>john@example.com</td>
-                    <td>1234</td>
-                    <td>John</td>
-                    <td>Doe</td>
-                    <td>m</td>
-                  </tr>
-              </tbody>
-              <tbody>
-                  <tr>
-                    <td>123</td>
-                    <td>john@example.com</td>
-                    <td>1234</td>
-                    <td>John</td>
-                    <td>Doe</td>
-                    <td>m</td>
-                  </tr>
-              </tbody>
-              <tbody>
-                  <tr>
-                    <td>123</td>
-                    <td>john@example.com</td>
-                    <td>1234</td>
-                    <td>John</td>
-                    <td>Doe</td>
-                    <td>m</td>
-                  </tr>
-              </tbody>
-              <thead class="thead-dark">
                 <tr>
-                  <th>Total</th>
+                  <th style = "width:10%">ID</th>
+                  <th>Item</th>
+                  <th>Unit Price</th>
+                  <th>Quantity</th>
+                  <th>Sub Total</th>
                   <th></th>
-                  <th></th>
-                  <th></th>
-                  <th>5000</th>
                 </tr>
-              </thead>
-            </table>
+                </thead>
+                  <tbody>
+                    <tr>
+                      <td id="ItemId">123</td>
+                      <td id ="itemName"">john@example. com</td>
+                      <td id="unitPrice">1234</td>
+                      <td id="itemQuantity">John</td>
+                      <td id="subTotal">Doe</td>
+                      <td><img src="remove.png"/></td>
+                    </tr>
+                </tbody>
+                <tbody>
+                    <tr>
+                      <td>123</td>
+                      <td>john@example. com</td>
+                      <td>1234</td>
+                      <td>John</td>
+                      <td>Doe</td>
+                      <td><img src="remove.png"/></td>
+                    </tr>
+                </tbody>
+                <tbody>
+                    <tr>
+                      <td>123</td>
+                      <td>john@example. com</td>
+                      <td>1234</td>
+                      <td>John</td>
+                      <td>Doe</td>
+                      <td><img src="remove.png"/></td>
+                    </tr>
+                </tbody>
+                
+                
+                
+                
+                <thead class="thead-light">
+                  <tr>
+                    <th>Total</th>
+                    <th></th>
+                    <th></th>
+                    <th>20</th>
+                    <th>5000</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                </table>
+                </div>
             <div class="cart-total">
               <b>Total Charges:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b> $<span>0</span>
               <input type="hidden" name="total-hidden-charges" id="total-hidden-charges" value="0" />
@@ -372,6 +339,8 @@ function deleteAll(){
   document.getElementById("wrapper2").innerHTML = "";
       return;
 }
+
+
 </script>
 
 </body>
