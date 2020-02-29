@@ -1,3 +1,4 @@
+
 <?php
 ob_start();
 $servername = "localhost";
@@ -29,8 +30,4 @@ mysqli_close($con);
 
 
 ?>
-
-
-
-
 

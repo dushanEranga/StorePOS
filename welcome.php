@@ -36,35 +36,6 @@ $result = $conn->query($sql);
   <link href="css.css" rel="stylesheet" />
 </head>
 
-<style>
-  html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
-
-
-  .wrapper,.wrapper2 {
-    display: grid;
-    grid-template-rows: 100px 100px;
-    grid-template-columns: 100px 100px 100px;
-    grid-gap: 10px;
-    background-color: inherit;
-    color: #444;
-    grid-template-columns: auto auto auto auto ;
-    padding: 25px 20px 20px 20px;
-  }
-  .box {
-    background-color: #444;
-    border-radius: 5px;
-    color: #fff;
-    font-size: 150%;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: all 0.6s; /*sets a transition (for hover effect)*/
-  }
-  .box:hover {
-    background: tomato; /*sets background colour*/
-  }
-</style>
 <body>
 
 <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
@@ -114,17 +85,18 @@ $result = $conn->query($sql);
               }
           ?>
         </div>
+
         <div id="divModel">
           <div class="modal fade" id="myModal" role="dialog">
-              <div class="modal-dialog">
+              <div class="modal-dialog modal-lg modal-dialog-centered">
                 <div class="modal-content">
-                  <div class="modal-header">
-                      <button type="button" class="close" data-dismiss="modal">&times;</button>
-                      <h4 class="modal-title">Modal Header</h4>
-                    </div>
+                <div class="modal-header">
+                  <h4 class="modal-title">Item List</h4>
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
                     <div class="modal-body" id="modelContents">
-                    <div  id="wrapper2"></div>
-                  </div>
+                    <div id="wrapper2"></div>
+                </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal" onclick="deleteAll();" >Close</button>
                   </div>
@@ -134,75 +106,35 @@ $result = $conn->query($sql);
         </div>
       </div>
 
+
       <div class="col-sm-4" >
         <div id="left_bar"> 
           <form action="#" id="cart_form" name="cart_form">
-          <div class = "outer">
-            <table class="table  table-hover ">
-            <thead class="thead-dark">
-                <tr>
-                  <th style = "width:10%">ID</th>
-                  <th>Item</th>
-                  <th>Unit Price</th>
-                  <th>Quantity</th>
-                  <th>Sub Total</th>
-                  <th></th>
-                </tr>
-                </thead>
-                  <tbody>
+            <div class = "outer">
+              <table class="table  table-hover ">
+                <thead class="thead-dark">
                     <tr>
-                      <td id="ItemId">123</td>
-                      <td id ="itemName"">john@example. com</td>
-                      <td id="unitPrice">1234</td>
-                      <td id="itemQuantity">John</td>
-                      <td id="subTotal">Doe</td>
-                      <td><img src="remove.png"/></td>
+                      <th style = "width:10%">ID</th>
+                      <th>Item</th>
+                      <th>Unit Price</th>
+                      <th>Quantity</th>
+                      <th>Sub Total</th>
+                      <th></th>
                     </tr>
-                </tbody>
-                <tbody>
-                    <tr>
-                      <td>123</td>
-                      <td>john@example. com</td>
-                      <td>1234</td>
-                      <td>John</td>
-                      <td>Doe</td>
-                      <td><img src="remove.png"/></td>
-                    </tr>
-                </tbody>
-                <tbody>
-                    <tr>
-                      <td>123</td>
-                      <td>john@example. com</td>
-                      <td>1234</td>
-                      <td>John</td>
-                      <td>Doe</td>
-                      <td><img src="remove.png"/></td>
-                    </tr>
-                </tbody>
-                
-                
-                
-                
-                <thead class="thead-light">
-                  <tr>
-                    <th>Total</th>
-                    <th></th>
-                    <th></th>
-                    <th>20</th>
-                    <th>5000</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                </table>
-                </div>
-            <div class="cart-total">
-              <b>Total Charges:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b> $<span>0</span>
-              <input type="hidden" name="total-hidden-charges" id="total-hidden-charges" value="0" />
+                    </thead>
+                    <tbody class = "tableBody"></tbody>                
+               </table>
             </div>
-            <button type="submit" id="Submit">CheckOut</button>
+            <div class="cart-total">
+                <b>Total Quantity:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b> <span class ="totalQuantity">0</span></br>
+                <b>Total Charges:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b> Rs: <span class ="totalAmount">0</span>
+                <input type="hidden" name="total-hidden-charges" id="total-hidden-charges" value="0" />
+            </div>
+              <button type="submit" id="Submit">CheckOut</button>
           </form>
         </div>
       </div>
+      
     </div>
   </div>
 </div>
@@ -249,20 +181,25 @@ function showItems(str) {
       var newQuantity = (cartArray.find(v => v.id == thisID).quantity)+1;
       cartArray.find(v => v.id == thisID).quantity = newQuantity;
 
-			var price 	 = $('#each-'+thisID).children(".shopp-price").find('em').html();
-			var quantity = $('#each-'+thisID).children(".shopp-quantity").html();
+			var price 	 = $('#each-'+thisID).children(".subTotal").html();
+			var quantity = $('#each-'+thisID).children(".itemQuantity").html();
+
+      var totalQuantity = $('.cart-total').children(".totalQuantity").html();
+      totalQuantity = parseInt(totalQuantity)+1;
+      $('.cart-total').children(".totalQuantity").html(totalQuantity);
+
 			quantity = parseInt(quantity)+parseInt(1);
 			
 			var total = parseInt(itemprice)*parseInt(quantity);
 			
-			$('#each-'+thisID).children(".shopp-price").find('em').html(total);
-			$('#each-'+thisID).children(".shopp-quantity").html(quantity);
+			$('#each-'+thisID).children(".subTotal").html(total);
+			$('#each-'+thisID).children(".itemQuantity").html(quantity);
 			
-			var prev_charges = $('.cart-total span').html();
+      //cart total display
+			var prev_charges = $('.cart-total').children(".totalAmount").html();
 			prev_charges = parseInt(prev_charges)-parseInt(price);
-			
 			prev_charges = parseInt(prev_charges)+parseInt(total);
-			$('.cart-total span').html(prev_charges);
+			$('.cart-total').children(".totalAmount").html(prev_charges);
 			
 			$('#total-hidden-charges').val(prev_charges);
 
@@ -275,18 +212,19 @@ function showItems(str) {
 		else
 		{
 			Arrays.push(thisID);
-			cartArray.push({id: thisID, quantity: 1});
+			cartArray.push({id: thisID, totalQuantity: 1});
 
-      
-			var prev_charges = $('.cart-total span').html();
+      var totalQuantity = $('.cart-total').children(".totalQuantity").html();
+      totalQuantity = parseInt(totalQuantity)+1;
+      $('.cart-total').children(".totalQuantity").html(totalQuantity);
+
+      //cart total
+			var prev_charges = $('.cart-total').children(".totalAmount").html();
 			prev_charges = parseInt(prev_charges)+parseInt(itemprice);
-			
-			$('.cart-total span').html(prev_charges);
+			$('.cart-total').children(".totalAmount").html(prev_charges);
 			$('#total-hidden-charges').val(prev_charges);
-			
-      $('#left_bar .cart-info').append('<div class="shopp" id="each-'+thisID+'"><div class="label">'+itemname+'</div><div class="shopp-price"> $<em>'+itemprice+'</em></div><span class="shopp-quantity"><div class="def-number-input number-input safari_only"><button onclick="this.parentNode.querySelector("input[type=number]").stepDown()" class="minus"></button><input class="quantity" min="0" name="quantity" value="1" type="number"><button onclick="this.parentNode.querySelector("input[type=number]").stepUp()" class="plus"></button></div></span><img src="remove.png" class="remove" /><br class="all" /></div>');
-			
-			$('#cart').css({'-webkit-transform' : 'rotate(20deg)','-moz-transform' : 'rotate(20deg)' });
+
+			$('#left_bar .tableBody').append('<tr id = "each-'+thisID+'"><td class="itemID">'+thisID+'</td><td class ="itemName"">'+itemname+'</td><td class="unitPrice">'+itemprice+'</td><td class="itemQuantity">1</td><td class="subTotal">'+itemprice+'</td><td><img src="remove.png" class ="remove"/></td></tr>');
 
       console.log("Item doesn't present");
       console.log(Arrays);
@@ -295,22 +233,28 @@ function showItems(str) {
 		}
 		
 	});	
+
   $('body').off().on('click','.remove',function(){
     console.log("Item removes");
-		var deduct = $(this).parent().children(".shopp-price").find('em').html();
-		var prev_charges = $('.cart-total span').html();
-		
-		var thisID = $(this).parent().attr('id').replace('each-','');
+
+		var deductTotal = $(this).closest("tr").find(".subTotal").html();
+    var deductQuantity = $(this).closest("tr").find(".itemQuantity").html();
+    var thisID = $(this).closest("tr").attr('id').replace('each-','');
+		var prev_charges = $('.cart-total').children(".totalAmount").html();
+    var totalQuantity = $('.cart-total').children(".totalQuantity").html();
 		
 		var pos = getpos(Arrays,thisID);
     Arrays.splice(pos,1,"0");
-    
     cartArray.splice(cartArray.findIndex(item => item.id === thisID), 1);
 		
-		prev_charges = parseInt(prev_charges)-parseInt(deduct);
-		$('.cart-total span').html(prev_charges);
+		prev_charges = parseInt(prev_charges)-parseInt(deductTotal);
+    $('.cart-total').children(".totalAmount").html(prev_charges);
+
+    var totalQuantity = parseInt(totalQuantity)-parseInt(deductQuantity);
+    $('.cart-total').children(".totalQuantity").html(totalQuantity);
+
 		$('#total-hidden-charges').val(prev_charges);
-		$(this).parent().remove();
+		$(this).closest("tr").remove();
 		
       console.log(Arrays);
       console.log(cartArray);

@@ -1,10 +1,59 @@
 html,
-body {
+body,
+h1,
+h2,
+h3,
+h4,
+h5 {
+    font-family: "Raleway", sans-serif;
     margin: 0;
     padding: 0;
     border: 0;
     outline: 0;
     height: 100%;
+}
+
+.wrapper,
+#wrapper2 {
+    display: grid;
+    grid-template-rows: 100px 100px;
+    grid-template-columns: 100px 100px 100px;
+    grid-gap: 10px;
+    background-color: inherit;
+    color: #444;
+    grid-template-columns: auto auto auto auto;
+    padding: 25px 20px 20px 20px;
+}
+
+.box {
+    background-color: #444;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 130%;
+    cursor: pointer;
+    display: flex;
+    overflow-wrap: break-word;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.6s;
+    font-weight: bold;
+    /*sets a transition (for hover effect)*/
+}
+
+.box:hover {
+    background: tomato;
+    /*sets background colour*/
+}
+
+.modal-body {
+    height: 70vh;
+    overflow-y: auto;
+}
+
+.modal-dialog {
+    position: absolute;
+    top: 1px;
+    left: 30px;
 }
 
 #left_bar {
