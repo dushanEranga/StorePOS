@@ -1,22 +1,6 @@
 <?php
-// Initialize the session
-session_start();
- 
-// Check if the user is logged in, if not then redirect him to login page
-if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
-    header("location: login.php");
-    exit;
-}
 
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "storePos";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-if($conn->connect_error){
-    die("Connection failed: ".$conn->connect_error);
-}
+include 'dbConnect.php';
 
 $sql = "SELECT CategoryCode , Category, CategorySinhala FROM  item_category WHERE Status=1";
 $result = $conn->query($sql);
@@ -36,38 +20,15 @@ $result = $conn->query($sql);
   <link href="css.css" rel="stylesheet" />
 </head>
 
+<script>
+$(function(){
+  $("#nav-placeholder").load("navBar.html");
+});
+</script>
+
 <body>
 
-<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
-    <div class="navbar-header">
-      <a class="navbar-brand" href="#">StorePOS</a>
-    </div>
-    <ul class="nav navbar-nav">
-      <li class="nav-item"><a class="nav-link" href="#">Sales</a></li>
-      <li class="nav-item"><a class="nav-link" class="nav-link" href="#">Day End/Open</a></li>
-      <li class="nav-item"><a class="nav-link" class="nav-link" href="#">Purchase</a></li>
-      <li class="nav-item"><a class="nav-link" class="nav-link" href="#">Add Items</a></li>
-      <li class="nav-item"><a class="nav-link" class="nav-link" href="#">Add Category</a></li>
-      <li class="nav-item"><a class="nav-link" class="nav-link" href="#">Statistics</a></li>
-
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
-          Statistics
-        </a>
-        <div class="dropdown-menu">
-          <a class="dropdown-item" href="#">Current Sales</a>
-          <a class="dropdown-item" href="#">Daily Sales</a>
-          <a class="dropdown-item" href="#">Monthly Sales</a>
-          <a class="dropdown-item" href="#">Sales By Item Wise</a>
-          <a class="dropdown-item" href="#">Sales By category Wise</a>
-        </div>
-      </li>
-    </ul>
-    <ul class="navbar-nav ml-auto">
-    <li class="nav-item"><a class="nav-link" class="nav-link"  href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-    <li class="nav-item"><a class="nav-link" class="nav-link" href="logout.php"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
-    </ul>
-</nav>
+<div id="nav-placeholder"></div>
   
 <div class="container-fluid">
     <div class="row">
@@ -88,13 +49,13 @@ $result = $conn->query($sql);
 
         <div id="divModel">
           <div class="modal fade" id="myModal" role="dialog">
-              <div class="modal-dialog modal-lg modal-dialog-centered">
+              <div class="modal-dialog modal-lg modal-dialog-centered" id ="modelDialog1">
                 <div class="modal-content">
                 <div class="modal-header">
                   <h4 class="modal-title">Item List</h4>
                   <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
-                    <div class="modal-body" id="modelContents">
+                    <div class="modal-body" id="modelContent1">
                     <div id="wrapper2"></div>
                 </div>
                   <div class="modal-footer">
@@ -109,7 +70,6 @@ $result = $conn->query($sql);
 
       <div class="col-sm-4" >
         <div id="left_bar"> 
-          <form action="#" id="cart_form" name="cart_form">
             <div class = "outer">
               <table class="table  table-hover ">
                 <thead class="thead-dark">
@@ -122,24 +82,63 @@ $result = $conn->query($sql);
                       <th></th>
                     </tr>
                     </thead>
-                    <tbody class = "tableBody"></tbody>                
+                    <tbody class = "tableBody" class = "tableBody"> </tbody>   
+                                
                </table>
+               <div class="toast mt-3">
+                      <div class="toast-header">
+                        Cart is Empty
+                      </div>
+                      <div class="toast-body">
+                        Please add some items.
+                      </div>
+                    </div> 
             </div>
             <div class="cart-total">
                 <b>Total Quantity:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b> <span class ="totalQuantity">0</span></br>
                 <b>Total Charges:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b> Rs: <span class ="totalAmount">0</span>
                 <input type="hidden" name="total-hidden-charges" id="total-hidden-charges" value="0" />
+                
+                <button type="submit" onclick ="saveOrder();" class="btn btn-primary"  id="submitButton">CheckOut</button>
             </div>
-              <button type="submit" id="Submit">CheckOut</button>
-          </form>
+              
         </div>
       </div>
-      
+
     </div>
   </div>
 </div>
 
+<!-- Order saving model -->
+<div class="modal fade" id="orderModel">
+    <div class="modal-dialog">
+      <div class="modal-content">
+      
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Placing the order...</h4>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body" id ="orderModelBody">
+        <div class="spinner-border text-muted"></div>  Please wait Order is saving...
+        </div>
+        
+        <!-- Modal footer -->
+        <div class="modal-footer" id ="orderModelFooter">
+          
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+  
+
 <script>
+
+var Arrays=new Array();
+var cartArray=new Array();
 
 function showItems(str) {
     var xhttp;  
@@ -162,15 +161,50 @@ function showItems(str) {
   
   }
 
+  function saveOrder() {
+
+    if(Array.isArray(cartArray) && cartArray.length){
+      $('#orderModel').modal({backdrop: 'static', keyboard: false});
 
 
-	var Arrays=new Array();
-  var cartArray=new Array();
-  
+      //add totalAmount and TotalQuantity to save in db
+      var totalQuantity = $('.cart-total').children(".totalQuantity").html();
+      var prev_charges = $('.cart-total').children(".totalAmount").html();
+      cartArray.push({totalQuantity: totalQuantity, totalAmount: prev_charges});
+      console.log(cartArray);
+
+      myJSON = JSON.stringify(cartArray);
+      console.log(myJSON);
+
+      $.ajax({
+          url:"placeOrder.php",
+          type:"post",
+          data: 'order='+JSON.stringify(cartArray),
+          success:function(data){
+              console.log(data);    //prints "string"
+              document.getElementById("orderModelBody").innerHTML = data;
+
+              if (data.indexOf("Order ID is") > -1){
+                document.getElementById("orderModelFooter").innerHTML = "<button type=\"button\" class=\"btn btn-success\" onclick=\"deleteCart();\">Close</button>";
+              }
+              
+          },
+          error: function() {
+            console.log("failed");    //prints "string"
+          }
+      });
+    }
+    else {
+      $("#submitButton").click(function(){
+        $('.toast').toast('show');
+      }); 
+    }
+  }
 
 	function bindButtonClick(){
+    
 
-    $('div #modelContents').off().on('click','.box',function(){
+    $('div #modelContent1').off().on('click','.box',function(){
 		
 		var thisID = $(this).attr('id');
 		var itemname  = $(this).find('div .name').html();
@@ -184,6 +218,7 @@ function showItems(str) {
 			var price 	 = $('#each-'+thisID).children(".subTotal").html();
 			var quantity = $('#each-'+thisID).children(".itemQuantity").html();
 
+      
       var totalQuantity = $('.cart-total').children(".totalQuantity").html();
       totalQuantity = parseInt(totalQuantity)+1;
       $('.cart-total').children(".totalQuantity").html(totalQuantity);
@@ -201,9 +236,11 @@ function showItems(str) {
 			prev_charges = parseInt(prev_charges)+parseInt(total);
 			$('.cart-total').children(".totalAmount").html(prev_charges);
 			
+      cartArray.find(v => v.id == thisID).subTotal = total;
+
+
 			$('#total-hidden-charges').val(prev_charges);
 
-      //Arrays.push(thisID);
       console.log("Item presents");
       console.log(Arrays);
       console.log(cartArray);
@@ -212,8 +249,7 @@ function showItems(str) {
 		else
 		{
 			Arrays.push(thisID);
-			cartArray.push({id: thisID, totalQuantity: 1});
-
+			
       var totalQuantity = $('.cart-total').children(".totalQuantity").html();
       totalQuantity = parseInt(totalQuantity)+1;
       $('.cart-total').children(".totalQuantity").html(totalQuantity);
@@ -224,12 +260,16 @@ function showItems(str) {
 			$('.cart-total').children(".totalAmount").html(prev_charges);
 			$('#total-hidden-charges').val(prev_charges);
 
+      cartArray.push({id: thisID, quantity: 1, subTotal: parseInt(itemprice)});
+
 			$('#left_bar .tableBody').append('<tr id = "each-'+thisID+'"><td class="itemID">'+thisID+'</td><td class ="itemName"">'+itemname+'</td><td class="unitPrice">'+itemprice+'</td><td class="itemQuantity">1</td><td class="subTotal">'+itemprice+'</td><td><img src="remove.png" class ="remove"/></td></tr>');
 
       console.log("Item doesn't present");
       console.log(Arrays);
       console.log(cartArray);
       bindButtonClick(); 
+
+      
 		}
 		
 	});	
@@ -279,9 +319,17 @@ function getpos(arr, obj) {
   }
 }
 
-function deleteAll(){
-  document.getElementById("wrapper2").innerHTML = "";
-      return;
+function deleteCart(){
+  console.log(Arrays);
+  cartArray = [];
+  Arrays = [];
+  console.log(cartArray);
+  console.log(Arrays);
+  $('#orderModel').modal('hide');
+  $('#left_bar .tableBody').html("");
+  $('.cart-total').children(".totalAmount").html("0");
+  $('.cart-total').children(".totalQuantity").html("0");
+  return;
 }
 
 

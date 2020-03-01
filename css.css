@@ -45,12 +45,12 @@ h5 {
     /*sets background colour*/
 }
 
-.modal-body {
+#modelContent1 {
     height: 70vh;
     overflow-y: auto;
 }
 
-.modal-dialog {
+#modelDialog1 {
     position: absolute;
     top: 1px;
     left: 30px;
