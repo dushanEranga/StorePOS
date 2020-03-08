@@ -1,6 +1,16 @@
 <?php
 
-include 'dbConnect.php';
+require_once 'dbConnect.php';
+
+$sql = "SELECT Status FROM  day_end ORDER BY DayId DESC LIMIT 1";
+$result = $conn->query($sql);
+
+while($row = $result->fetch_assoc()){
+  $dayStatus = $row["Status"];
+}
+
+$result->close();
+$conn->next_result();
 
 $sql = "SELECT CategoryCode , Category, CategorySinhala FROM  item_category WHERE Status=1";
 $result = $conn->query($sql);
@@ -21,7 +31,9 @@ $result = $conn->query($sql);
 </head>
 
 <script>
+  console.log("<?php  echo $dayStatus ?>");
 $(function(){
+  $.ajaxSetup({ cache: false });
   $("#nav-placeholder").load("navBar.html");
 });
 </script>
@@ -85,13 +97,9 @@ $(function(){
                     <tbody class = "tableBody" class = "tableBody"> </tbody>   
                                 
                </table>
-               <div class="toast mt-3">
-                      <div class="toast-header">
-                        Cart is Empty
-                      </div>
-                      <div class="toast-body">
-                        Please add some items.
-                      </div>
+               <div class="toast mt-3" id="toast">
+                      <div class="toast-header" id="toast-header"></div>
+                      <div class="toast-body" id="toast-body"></div>
                     </div> 
             </div>
             <div class="cart-total">
@@ -99,7 +107,7 @@ $(function(){
                 <b>Total Charges:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</b> Rs: <span class ="totalAmount">0</span>
                 <input type="hidden" name="total-hidden-charges" id="total-hidden-charges" value="0" />
                 
-                <button type="submit" onclick ="saveOrder();" class="btn btn-primary"  id="submitButton">CheckOut</button>
+                <button type="submit" onclick ="this.blur(); saveOrder();" class="btn btn-primary"  id="submitButton">CheckOut</button>
             </div>
               
         </div>
@@ -121,7 +129,7 @@ $(function(){
         
         <!-- Modal body -->
         <div class="modal-body" id ="orderModelBody">
-        <div class="spinner-border text-muted"></div>  Please wait Order is saving...
+        <div class="spinner-border text-muted"></div>  Please wait, Order is saving...
         </div>
         
         <!-- Modal footer -->
@@ -133,12 +141,27 @@ $(function(){
     </div>
   </div>
 
-  
+<!-- cart model -->
+  <div class="modal fade" id="cartModel">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <!-- Modal Header -->
+        <div class="modal-header" id ="cartModelTitle"></div>
+        <!-- Modal body -->
+        <div class="modal-body" id ="cartModelBody"></div>
+        <!-- Modal footer -->
+        <div class="modal-footer" id ="cartModelFooter"> </div>  
+      </div>
+    </div>
+  </div>
 
 <script>
 
 var Arrays=new Array();
 var cartArray=new Array();
+var newUnit;
+    var newQuantity ;
+    var newTot;
 
 function showItems(str) {
     var xhttp;  
@@ -162,8 +185,11 @@ function showItems(str) {
   }
 
   function saveOrder() {
-
-    if(Array.isArray(cartArray) && cartArray.length){
+    var x = document.getElementById("toast");
+    
+    var dayStatus = "<?php echo $dayStatus ?>";
+    if(Array.isArray(cartArray) && cartArray.length && dayStatus==0 ){
+      x.style.display = "none";
       $('#orderModel').modal({backdrop: 'static', keyboard: false});
 
 
@@ -195,7 +221,10 @@ function showItems(str) {
       });
     }
     else {
+      x.style.display = "block";
       $("#submitButton").click(function(){
+        document.getElementById("toast-header").innerHTML = dayStatus==1?'Please open a Day':'Cart is Empty';
+        document.getElementById("toast-body").innerHTML = dayStatus==1?'Please open a Day':'Cart is Empty';
         $('.toast').toast('show');
       }); 
     }
@@ -260,16 +289,15 @@ function showItems(str) {
 			$('.cart-total').children(".totalAmount").html(prev_charges);
 			$('#total-hidden-charges').val(prev_charges);
 
-      cartArray.push({id: thisID, quantity: 1, subTotal: parseInt(itemprice)});
+      cartArray.push({id: thisID, quantity: 1, unitPrice: parseInt(itemprice),subTotal: parseInt(itemprice)});
+      
 
-			$('#left_bar .tableBody').append('<tr id = "each-'+thisID+'"><td class="itemID">'+thisID+'</td><td class ="itemName"">'+itemname+'</td><td class="unitPrice">'+itemprice+'</td><td class="itemQuantity">1</td><td class="subTotal">'+itemprice+'</td><td><img src="remove.png" class ="remove"/></td></tr>');
+			$('#left_bar .tableBody').append('<tr id = "each-'+thisID+'"><td class="itemID">'+thisID+'</td><td class ="itemName">'+itemname+'</td><td class="unitPrice">'+itemprice+'</td><td class="itemQuantity">1</td><td class="subTotal">'+itemprice+'</td><td><img src="remove.png" class ="remove"/></td></tr>');
 
       console.log("Item doesn't present");
       console.log(Arrays);
       console.log(cartArray);
       bindButtonClick(); 
-
-      
 		}
 		
 	});	
@@ -299,7 +327,71 @@ function showItems(str) {
       console.log(Arrays);
       console.log(cartArray);
   });	
+
+  $('body').off().on('click','.itemName',function(){
+    var unitPrice = $(this).closest("tr").find(".unitPrice").html();
+    var subTotal = $(this).closest("tr").find(".subTotal").html();
+    var subQuantity = $(this).closest("tr").find(".itemQuantity").html();
+    var thisID = $(this).closest("tr").attr('id').replace('each-','');
+
+    document.getElementById("cartModelTitle").innerHTML =subQuantity;
+    var cartUnitPrice = " <table class=\"table  table-hover \"><tr><td>Unit Price : <kbd>Rs:" + unitPrice + ".00</kbd> </td>";
+    var cartUnitPriceDiscount = " <td>Discounted Unit Price :<input type=\"number\" value=" + unitPrice + " id=\"cartUnitPriceDiscount\" name=\"cartUnitPriceDiscount\" min=\"1\" onkeypress=\"return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))\"> </td></tr>"; 
+    var cartQuantity = " <tr><td colspan=\"2\">Quantity :<input type=\"number\" value= " + subQuantity + " id=\"cartQuantity\" name=\"cartQuantity\" min=\"1\" onkeypress=\"return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))\">   </td></tr>";
+    var cartSubTotal = " <tr><td>Sub total : <kbd>Rs:" + subTotal + ".00</kbd></td>";
+    var cartSubTotalDiscount = "<td> Discounted sub total :<input type=\"number\" value= " + subTotal + " id=\"cartSubTotalDiscount\" name=\"cartSubTotalDiscount\" min=\"1\" onkeypress=\"return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))\">  </td></tr> </table>";
+    
+    document.getElementById("cartModelBody").innerHTML = cartUnitPrice + cartUnitPriceDiscount + cartQuantity + cartSubTotal + cartSubTotalDiscount;
+    document.getElementById("cartModelFooter").innerHTML = "<button type=\"button\" class=\"btn btn-success\" id=\"cartModelButton\" onclick=\"updateCart( " + thisID + " );\" >Update</button>";
+
+    $('#cartModel').modal('show');
+  });	
+
+
+  $('#cartModelBody').on('keyup','#cartUnitPriceDiscount,#cartQuantity',function(){
+    newUnit = parseInt($("#cartUnitPriceDiscount").val());
+    newQuantity = parseInt($("#cartQuantity").val());
+    newTot = newUnit * newQuantity;
+    $('#cartSubTotalDiscount').val(newTot);
+  });
 }
+
+
+  function updateCart(thisId){
+
+  cartArray.find(v => v.id == thisId).unitPrice = newUnit;
+  cartArray.find(v => v.id == thisId).quantity = newQuantity;
+  cartArray.find(v => v.id == thisId).subTotal = newTot;
+
+  console.log(cartArray);
+
+  
+
+ var prev_charges = 0;
+ var totalQuantity = 0;
+  cartArray.forEach(function (order) {
+    prev_charges += order.subTotal;
+    totalQuantity += order.quantity
+});
+
+  $('.cart-total').children(".totalAmount").html(prev_charges);
+  $('.cart-total').children(".totalQuantity").html(totalQuantity);
+
+  $('#each-'+thisId).closest("tr").find(".unitPrice").html(newUnit);
+  $('#each-'+thisId).closest("tr").find(".subTotal").html(newTot);
+  $('#each-'+thisId).closest("tr").find(".itemQuantity").html(newQuantity);
+
+  /*var prev_charges = $('.cart-total').children(".totalAmount").html();
+	prev_charges = parseInt(prev_charges)-parseInt(price);
+	prev_charges = parseInt(prev_charges)+parseInt(total);
+	$('.cart-total').children(".totalAmount").html(prev_charges);*/
+
+  $('#cartModel').modal('hide');
+  
+}
+   
+  
+
 	
 	$('#Submit').livequery('click', function() {
 		
@@ -332,6 +424,8 @@ function deleteCart(){
   return;
 }
 
+
+  
 
 </script>
 

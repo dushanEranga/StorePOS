@@ -1,29 +1,12 @@
 <?php
 
-session_start();
- 
-// Check if the user is logged in, if not then redirect him to login page
-if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
-    header("location: login.php");
-    exit;
-}
-
-ob_start();
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "storePos";
-
+require_once 'dbConnect.php';
 
 $q = intval($_GET['q']);
-$con = new mysqli($servername, $username, $password, $dbname);
-if($con->connect_error){
-    die("Connection failed: ".$con->connect_error);
-}
 
 $sql = "SELECT ItemCode , supplierCode, CategoryCode, ItemName, ItemNameSinhala, SellingPrice, OtherDescriptions FROM item_list WHERE Status=1 AND CategoryCode='".$q."'";
 
-$result = mysqli_query($con,$sql);
+$result = mysqli_query($conn,$sql);
 
 ob_end_clean();
 
@@ -34,7 +17,7 @@ while($row = mysqli_fetch_array($result)){
             <div><span class="price">'.$row['SellingPrice'].'</span> </div>
           </div>';
 }
-mysqli_close($con);
+mysqli_close($conn);
 
 
 ?>
