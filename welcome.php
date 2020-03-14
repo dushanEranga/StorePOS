@@ -8,10 +8,17 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     exit;
 }
 
+<<<<<<< Updated upstream
 $servername = "localhost";
 $username = "root";
 $password = "";
 $dbname = "storePos";
+=======
+require_once 'database/dbConnect.php';
+
+$sql = "SELECT Status FROM  day_end ORDER BY DayId DESC LIMIT 1";
+$result = $conn->query($sql);
+>>>>>>> Stashed changes
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 if($conn->connect_error){
@@ -31,9 +38,14 @@ $result = $conn->query($sql);
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<<<<<<< Updated upstream
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/livequery/1.1.1/jquery.livequery.js"></script>
   <link href="css.css" rel="stylesheet" />
+=======
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+  <link href="./styles/css.css" rel="stylesheet" />
+>>>>>>> Stashed changes
 </head>
 
 <style>
@@ -149,7 +161,18 @@ $result = $conn->query($sql);
 
 <script>
 
+<<<<<<< Updated upstream
 function showItems(str) {
+=======
+var globalGetJSONPath='@Url.ACtion("getItems.php","database)';
+var Arrays=new Array();
+var cartArray=new Array();
+var newUnit;
+    var newQuantity ;
+    var newTot;
+
+    function showItems(str) {
+>>>>>>> Stashed changes
     var xhttp;  
     if (str == "") {
       document.getElementById("wrapper2").innerHTML = "";
@@ -163,16 +186,46 @@ function showItems(str) {
         $("#myModal").modal();
       }
     };
-    xhttp.open("GET", "./getItems.php?q="+str, true);
+    xhttp.open("GET", "database/getItemsDb.php?q="+str, true);
     xhttp.send();
     bindButtonClick();  
-    clearconsole();
+    //clearconsole();
   
   }
 
 
 
+<<<<<<< Updated upstream
 	var Arrays=new Array();
+=======
+      $.ajax({
+          url:"database/placeOrderDb.php",
+          type:"post",
+          data: 'order='+JSON.stringify(cartArray),
+          success:function(data){
+              console.log(data);    //prints "string"
+              document.getElementById("orderModelBody").innerHTML = data;
+
+              if (data.indexOf("Order ID is") > -1){
+                document.getElementById("orderModelFooter").innerHTML = "<button type=\"button\" class=\"btn btn-success\" onclick=\"deleteCart();\">Close</button>";
+              }
+              
+          },
+          error: function() {
+            console.log("failed");    //prints "string"
+          }
+      });
+    }
+    else {
+      x.style.display = "block";
+      $("#submitButton").click(function(){
+        document.getElementById("toast-header").innerHTML = dayStatus==1?'Please open a Day':'Cart is Empty';
+        document.getElementById("toast-body").innerHTML = dayStatus==1?'Please open a Day':'Cart is Empty';
+        $('.toast').toast('show');
+      }); 
+    }
+  }
+>>>>>>> Stashed changes
 
 	function bindButtonClick(){
 
@@ -215,14 +268,25 @@ function showItems(str) {
 			
 			$('.cart-total span').html(prev_charges);
 			$('#total-hidden-charges').val(prev_charges);
+<<<<<<< Updated upstream
 			
 			$('#left_bar .cart-info').append('<div class="shopp" id="each-'+thisID+'"><div class="label">'+itemname+'</div><div class="shopp-price"> $<em>'+itemprice+'</em></div><span class="shopp-quantity">1</span><img src="remove.png" class="remove" /><br class="all" /></div>');
 			
 			$('#cart').css({'-webkit-transform' : 'rotate(20deg)','-moz-transform' : 'rotate(20deg)' });
+=======
+
+      cartArray.push({id: thisID, quantity: 1, unitPrice: parseInt(itemprice),subTotal: parseInt(itemprice)});
+      
+
+			$('#left_bar .tableBody').append('<tr id = "each-'+thisID+'"><td class="itemID">'+thisID+'</td><td class ="itemName">'+itemname+'</td><td class="unitPrice">'+itemprice+'</td><td class="itemQuantity">1</td><td class="subTotal">'+itemprice+'</td><td><img src="images/remove.png" class ="remove"/></td></tr>');
+
+      console.log("Item doesn't present");
+>>>>>>> Stashed changes
       console.log(Arrays);
 		}
 		
 	});	
+<<<<<<< Updated upstream
 	
 	$('.remove').livequery('click', function() {
 		
@@ -230,6 +294,17 @@ function showItems(str) {
 		var prev_charges = $('.cart-total span').html();
 		
 		var thisID = $(this).parent().attr('id').replace('each-','');
+=======
+
+  $('#left_bar').off().on('click','.remove',function(){
+    console.log("Item removes");
+
+		var deductTotal = $(this).closest("tr").find(".subTotal").html();
+    var deductQuantity = $(this).closest("tr").find(".itemQuantity").html();
+    var thisID = $(this).closest("tr").attr('id').replace('each-','');
+		var prev_charges = $('.cart-total').children(".totalAmount").html();
+    var totalQuantity = $('.cart-total').children(".totalQuantity").html();
+>>>>>>> Stashed changes
 		
 		var pos = getpos(Arrays,thisID);
 		Arrays.splice(pos,1,"0");
@@ -239,6 +314,7 @@ function showItems(str) {
 		$('#total-hidden-charges').val(prev_charges);
 		$(this).parent().remove();
 		
+<<<<<<< Updated upstream
 	});	
 	
 	$('#Submit').livequery('click', function() {
@@ -251,6 +327,74 @@ function showItems(str) {
 		
 	});	
   }
+=======
+      console.log(Arrays);
+      console.log(cartArray);
+  });	
+
+  $('body').off().on('click','.itemName',function(){
+    var unitPrice = $(this).closest("tr").find(".unitPrice").html();
+    var subTotal = $(this).closest("tr").find(".subTotal").html();
+    var subQuantity = $(this).closest("tr").find(".itemQuantity").html();
+    var thisID = $(this).closest("tr").attr('id').replace('each-','');
+
+    document.getElementById("cartModelTitle").innerHTML =subQuantity;
+    var cartUnitPrice = " <table class=\"table  table-hover \"><tr><td>Unit Price : <kbd>Rs:" + unitPrice + ".00</kbd> </td>";
+    var cartUnitPriceDiscount = " <td>Discounted Unit Price :<input type=\"number\" value=" + unitPrice + " id=\"cartUnitPriceDiscount\" name=\"cartUnitPriceDiscount\" min=\"1\" onkeypress=\"return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))\"> </td></tr>"; 
+    var cartQuantity = " <tr><td colspan=\"2\">Quantity :<input type=\"number\" value= " + subQuantity + " id=\"cartQuantity\" name=\"cartQuantity\" min=\"1\" onkeypress=\"return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))\">   </td></tr>";
+    var cartSubTotal = " <tr><td>Sub total : <kbd>Rs:" + subTotal + ".00</kbd></td>";
+    var cartSubTotalDiscount = "<td> Discounted sub total :<input type=\"number\" value= " + subTotal + " id=\"cartSubTotalDiscount\" name=\"cartSubTotalDiscount\" min=\"1\" onkeypress=\"return (event.charCode !=8 && event.charCode ==0 || (event.charCode >= 48 && event.charCode <= 57))\">  </td></tr> </table>";
+    
+    document.getElementById("cartModelBody").innerHTML = cartUnitPrice + cartUnitPriceDiscount + cartQuantity + cartSubTotal + cartSubTotalDiscount;
+    document.getElementById("cartModelFooter").innerHTML = "<button type=\"button\" class=\"btn btn-success\" id=\"cartModelButton\" onclick=\"updateCart( " + thisID + " );\" >Update</button>";
+
+    $('#cartModel').modal('show');
+  });	
+
+
+  $('#cartModelBody').on('keyup','#cartUnitPriceDiscount,#cartQuantity',function(){
+    newUnit = parseInt($("#cartUnitPriceDiscount").val());
+    newQuantity = parseInt($("#cartQuantity").val());
+    newTot = newUnit * newQuantity;
+    $('#cartSubTotalDiscount').val(newTot);
+  });
+  
+}
+
+
+  function updateCart(thisId){
+
+  cartArray.find(v => v.id == thisId).unitPrice = newUnit;
+  cartArray.find(v => v.id == thisId).quantity = newQuantity;
+  cartArray.find(v => v.id == thisId).subTotal = newTot;
+
+  console.log(cartArray);
+
+  
+
+ var prev_charges = 0;
+ var totalQuantity = 0;
+  cartArray.forEach(function (order) {
+    prev_charges += order.subTotal;
+    totalQuantity += order.quantity
+});
+
+  $('.cart-total').children(".totalAmount").html(prev_charges);
+  $('.cart-total').children(".totalQuantity").html(totalQuantity);
+
+  $('#each-'+thisId).closest("tr").find(".unitPrice").html(newUnit);
+  $('#each-'+thisId).closest("tr").find(".subTotal").html(newTot);
+  $('#each-'+thisId).closest("tr").find(".itemQuantity").html(newQuantity);
+
+  /*var prev_charges = $('.cart-total').children(".totalAmount").html();
+	prev_charges = parseInt(prev_charges)-parseInt(price);
+	prev_charges = parseInt(prev_charges)+parseInt(total);
+	$('.cart-total').children(".totalAmount").html(prev_charges);*/
+
+  $('#cartModel').modal('hide');
+  
+}
+>>>>>>> Stashed changes
 
 function include(arr, obj) {
   for(var i=0; i<arr.length; i++) {
